@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <link th:href="@{/css/index.css}" rel="stylesheet" type="text/css">
+    <title>홈페이지</title>
+</head>
+<body>
+<h1>타임리프 예제 테이블</h1>
+<table>
+    <thead>
+    <tr>
+        <th>번호</th>
+        <th>제목</th>
+        <th>작성자</th>
+        <th>날짜</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>0</td>
+        <td>테스트 제목 입니다.</td>
+        <td>호머 심슨</td>
+        <td>2022.03.29</td>
+    </tr>
+    <!--
+    <tr th:object="${board}" >
+        <td><span th:text="*{no}"></span></td>
+        <td><span th:text="*{title}"></span></td>
+        <td><span th:text="*{writer}"></span></td>
+        <td><span th:text="${#temporals.format(board.updateTime, 'yyyy-MM-dd HH:mm')}"></span></td>
+    </tr>
+    <tr th:each="board : ${boardList}">
+        <td><span th:text="${board.no}"></span></td>
+        <td><span th:text="${board.title}"></span></td>
+        <td><span th:text="${board.writer}"></span></td>
+        <td><span th:text="${#temporals.format(board.updateTime, 'yyyy-MM-dd HH:mm')}"></span></td>
+    </tr>
+    -->
+    <tr th:each="vo, iterState : ${voList}">
+        <div th:if="${iterState.count} % 2 != 0">
+            <td><span th:text="${vo.no}"></span></td>
+            <td><span th:text="${vo.title}"></span></td>
+            <td><span th:text="${vo.writer}"></span></td>
+            <td><span th:text="${#temporals.format(vo.updateTime, 'yyyy-MM-dd HH:mm')}"></span></td>
+        </div>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>
