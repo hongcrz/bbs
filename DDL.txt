@@ -1,0 +1,115 @@
+-- 데이터베이스 확인
+show databases;
+
+-- 데이터베이스 생성
+create database board_db;
+//mysqladmin -u root create springbook -p
+
+-- 사용자 생성
+create user 'admin' identified by 'admin';
+-- bbs/bbs
+
+-- 사용자 확인
+select host, user, PASSWORD from mysql.user;
+
+-- 사용자권한추가(GRANT ALL PRIVILEGES ON 데이터베이스.* TO '아이디'@'%';)
+grant all privileges on board_db.* to 'admin'@'%';
+
+-- 권한 새로고침
+flush privileges;
+
+commit;
+
+-- 사용할 데이터베이스를 선택
+use edu_bbs;
+
+
+=====================================================================================
+================================테이블 생성============================================
+=====================================================================================
+
+drop table bbs_board ;
+drop table member;
+
+-- board table
+CREATE TABLE board (
+	board_seq		bigint(20)		not null	auto_increment	comment '게시판 번호',
+	title			varchar(200)	not null					comment '게시물 제목',
+	content			text			not null					comment '게시물 내용',
+	reg_id			varchar(100)	not null					comment '작성자',
+	reg_time		datetime		null		default null	comment '작성일',
+	read_cnt 		int(11)			not null	default 0		comment '조회수',
+	update_time		datetime		null		default null	comment '수정일',
+	primary key (board_seq)
+) engine=InnoDB default charset=utf8mb3 comment='게시판';
+
+
+-- user table 
+create table user (
+	user_seq		bigint(20)		not null	auto_increment	comment '회원 번호',	
+	id				varchar(200)	not null					comment '회원 아이디',
+	pwd 			varchar(200)	not null					comment '비밀번호',
+	name			varchar(200)	null		default null	comment '이름',
+	addr			varchar(200)	null		default null	comment '주소',
+	reg_dtm			datetime		not null	            	comment '가입일',
+	whdwl_dtm		datetime		null		default null	comment '회원 탈퇴 신청일',
+	primary key (user_seq)
+) engine=InnoDB default charset=utf8mb3 comment='회원 정보';
+
+-- member -> user로 변경
+alter table member rename user;
+alter table user change column member_seq user_seq bigint(20) not null auto_increment comment '회원 번호';
+SELECT * from user;
+
+-- 회원 탈퇴 신청일 추가
+alter table user add column withdrawal_dtm datetime null comment '회원 탈퇴 신청일';
+alter table user change column withdrawal_dtm whdwl_dtm datetime null comment '회원 탈퇴 신청일';
+
+
+-- auth table 
+create table auth (
+	user_seq		bigint(20)		not null					comment '회원 번호',
+	auth_notice		char(1)			not null	default 0		comment '공지사항 운영자 권한',
+	auth_board		char(1)			not null	default 0		comment '게시판 운영자 권한',
+	FOREIGN KEY (user_seq) REFERENCES user (user_seq) 
+) engine=InnoDB default charset=utf8mb3 comment='권한 정보';
+
+
+-- cmt table
+create table board_cmt (
+	board_seq		bigint(20)		not null					comment '게시판 번호(FK)',
+	cmt_seq			bigint(20)		NOT NULL	auto_increment	comment '댓글 번호',
+	content			text			not null					comment '댓글 내용',
+	reg_id			varchar(100)	not null					comment '작성자',
+	reg_time		datetime		null		default null	comment '작성일',
+	update_time		datetime		null		default null	comment '수정일',
+	FOREIGN KEY (board_seq) REFERENCES board (board_seq), 
+	primary key (cmt_seq)
+) engine=InnoDB default charset=utf8mb3 comment='게시판 댓글';
+
+
+-- notice table
+CREATE TABLE notice (
+	notice_seq		bigint(20)		not null	auto_increment	comment '공지사항 번호',
+	title			varchar(200)	not null					comment '공지사항 제목',
+	content			text			not null					comment '공지사항 내용',
+	reg_time		datetime		null		default null	comment '작성일',
+	read_cnt 		int(11)			not null	default 0		comment '조회수',
+	update_time		datetime		null		default null	comment '수정일',
+	primary key (notice_seq)
+) engine=InnoDB default charset=utf8mb3 comment='공지사항';
+
+-- ---------------------------------------------------------------------------
+create table member (
+	member_seq		bigint(20)		not null	auto_increment	comment '테스트 회원 번호',
+	id				varchar(20)		null		default null	comment '테스트 회원 아이디',
+	pwd				varchar(20)		null		default null	comment '테스트 회원 비밀번호',
+	name			varchar(20)		null		default null	comment '테스트 회원 이름',
+	reg_id			varchar(20)		null		default null	comment '테스트 작성 아이디',
+	reg_dtm			datetime		null		default null	comment '테스트 작성 일자',
+	mod_id			varchar(20)		null		default null	comment '테스트 수정 아이디',
+	mod_dtm			datetime		null		default null	comment '테스트 수정 일자',
+	primary key (member_seq)
+) engine=InnoDB default charset=utf8mb3 comment='테스트 회원';
+
+select * from member;
